@@ -4,7 +4,8 @@ build         :=build
 report        :=report
 
 # File test
-document      :=$(report)/document.tex
+finalreport   :=$(build)/report.pdf
+document      :=$(report)/report.tex
 
 
 all: $(finalreport)
@@ -14,4 +15,4 @@ $(finalreport):
 
 
 clean:
-	rm -r $(build_dir)
+	rm -r $(build)/*
