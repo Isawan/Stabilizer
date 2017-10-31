@@ -1,3 +1,5 @@
 build
 resources
 env
+__pycache__
+.pyc
