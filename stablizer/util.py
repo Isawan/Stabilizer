@@ -14,7 +14,7 @@ def loadfile(filename):
 
 # Produces a red-blue comparison between two greyscale images
 def combine_compare(video,shot1,shot2):
-    z = np.ones(video.shape[:2])
-    return np.stack((video[shot1],video[shot2],z),axis=2)
+    z = np.zeros(video.shape[:2])
+    return np.stack((video[shot1],z,video[shot2]),axis=2)
 
 
