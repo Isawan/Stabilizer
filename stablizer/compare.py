@@ -12,7 +12,7 @@ video = util.loadfile('resources/sample1.webm')
 kp    = [0]*2
 des   = [0]*2
 kp[0],des[0]    = identify.detect_features(video[0])
-kp[1],des[1]    = identify.detect_features(video[30])
+kp[1],des[1]    = identify.detect_features(video[10])
 
 # Perform matching
 m = match.match(kp[0],des[0],kp[1],des[1])
