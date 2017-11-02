@@ -6,13 +6,14 @@ import stablizer.match as match
 import stablizer.transform as transform
 import cv2
 
-video = util.loadfile('resources/sample1.webm')
+video = util.loadfile('resources/sample2.mp4')
+frame = 20
 
 # Load images
 kp    = [0]*2
 des   = [0]*2
-kp[0],des[0]    = identify.detect_features(video[0])
-kp[1],des[1]    = identify.detect_features(video[10])
+kp[0],des[0]    = identify.detect_features(video[frame])
+kp[1],des[1]    = identify.detect_features(video[frame-1])
 
 # Perform matching
 m = match.match(kp[0],des[0],kp[1],des[1])
@@ -26,8 +27,8 @@ m = match.match(kp[0],des[0],kp[1],des[1])
 #compim= cv2.drawMatches(video[0],kp[0],video[10],kp[1],m,None)
 tm = transform.ransac_transform(kp[0],kp[1],m)
 invtm = np.linalg.inv(tm)
-vid = cv2.warpPerspective(video[10],invtm,video[0].shape[-1::-1])
-compim = util.combine_compare(video[0],vid)
+vid = cv2.warpPerspective(video[frame],invtm,video[0].shape[-1::-1])
+compim = util.combine_compare(video[frame-1],vid)
 
 plt.imshow(compim/255)
 plt.show()
