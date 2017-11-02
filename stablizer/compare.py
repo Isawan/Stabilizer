@@ -12,7 +12,7 @@ video = util.loadfile('resources/sample1.webm')
 kp    = [0]*2
 des   = [0]*2
 kp[0],des[0]    = identify.detect_features(video[0])
-kp[1],des[1]    = identify.detect_features(video[10])
+kp[1],des[1]    = identify.detect_features(video[30])
 
 # Perform matching
 m = match.match(kp[0],des[0],kp[1],des[1])
@@ -27,7 +27,7 @@ m = match.match(kp[0],des[0],kp[1],des[1])
 tm = transform.ransac_transform(kp[0],kp[1],m)
 invtm = np.linalg.inv(tm)
 vid = cv2.warpPerspective(video[10],invtm,video[0].shape[-1::-1])
-compim = util.combine_compare(video[0],video[10])
+compim = util.combine_compare(video[0],vid)
 
 plt.imshow(compim/255)
 plt.show()
