@@ -55,22 +55,16 @@ def stablize_video(video,output_matrix=False):
     return np.array(vid)
 
 if __name__=='__main__':
-    video = util.loadfile('resources/sample2.mp4')[60:]
+    video = util.loadfile('resources/sample2.mp4')
     stablized_video = stablize_video(video)
 
     # Prepare video writer
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
     if '-fs' in sys.argv:
         filename = sys.argv[sys.argv.indexOf('-ft')+1]
         stable_writer = util.VideoWriter(filename) 
     else:
         stable_writer = util.VideoShower('stable')
    
-    if '-fm' in sys.argv:
-        matrix_writer = util.MatrixWriter()
-    else:
-        matrix_writer = util.DummyWriter()
-
     for i in range(video.shape[0]):
         stable_writer.write(stablized_video[i])
         if cv2.waitKey(33) & 0xFF == ord('q'):
