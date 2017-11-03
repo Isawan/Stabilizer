@@ -7,7 +7,7 @@ import stablizer.identify as identify
 import stablizer.match as match
 import stablizer.transform as transform
 
-def stablize_video(video,output_matrix=False):
+def stablize_video(video,extra=False):
     kp    = [0]*video.shape[0]
     des   = [0]*video.shape[0]
     matches = [0]*(video.shape[0]-1)
@@ -44,14 +44,24 @@ def stablize_video(video,output_matrix=False):
     fy = (np.max(gmatrix[:,1,2])-np.min(gmatrix[:,1,2])
             + video.shape[1]).astype(int)
 
+    # Create mask if needed
+    mask_image = np.ones((video.shape[0],fy,fx),np.bool_)
+    base_mask  = np.ones(video.shape[1:])
+
     # Perform transformations
     for i in range(video.shape[0]):
         vid[i] = cv2.warpPerspective(video[i], gmatrix[i],
                 (fx,fy))
+        mask_image[i] = cv2.warpPerspective(base_mask, gmatrix[i],
+                (fx,fy))
     print('Transformations completed')
 
-    if output_matrix :
-        return np.array(vid),localmt
+    if extra:
+        extrainfo = {
+                'mask':mask_image,
+                'localmt':localmt
+                }
+        return np.array(vid),extrainfo
     return np.array(vid)
 
 if __name__=='__main__':
