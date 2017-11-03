@@ -29,6 +29,7 @@ def stablize_video(video,extra=False):
     # Calculate local transformation matrices
     invmatr[0] = np.diag(np.ones(3))
     for i in range(1,video.shape[0]):
+        print(i)
         localmt[i] = transform.affine_transform(kp[i-1],kp[i],matches[i-1])
         invmatr[i] = np.linalg.inv(localmt[i])
     print('Calculated local transformation matrices')
@@ -43,6 +44,12 @@ def stablize_video(video,extra=False):
             + video.shape[2]).astype(int)
     fy = (np.max(gmatrix[:,1,2])-np.min(gmatrix[:,1,2])
             + video.shape[1]).astype(int)
+   
+    # Position camera position offset in final image
+    x = np.min(gmatrix[:,0,2])
+    y = np.min(gmatrix[:,1,2])
+    gmatrix[:,0,2] = gmatrix[:,0,2] - x
+    gmatrix[:,1,2] = gmatrix[:,1,2] - y
 
     # Create mask if needed
     mask_image = np.ones((video.shape[0],fy,fx),np.bool_)
@@ -65,7 +72,7 @@ def stablize_video(video,extra=False):
     return np.array(vid)
 
 if __name__=='__main__':
-    video = util.loadfile('resources/sample2.mp4')
+    video = util.loadfile('resources/sample2.mp4')[:200]
     stablized_video = stablize_video(video)
 
     # Prepare video writer

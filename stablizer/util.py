@@ -1,15 +1,19 @@
 import cv2 as cv
 import numpy as np
 
-def loadfile(filename):
+def loadfile(filename,maxframe=None):
     frames = []
     capture = cv.VideoCapture(filename)
+    fc = 0
     while(capture.isOpened()):
         ret, f = capture.read()
         if not ret:
             break
         f = cv.cvtColor(f,cv.COLOR_BGR2GRAY)
         frames.append(f)
+        if maxframe and fc >= maxframe:
+            break
+        fc = fc + 1
     return np.array(frames)
 
 class VideoWriter:
