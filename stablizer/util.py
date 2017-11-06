@@ -17,10 +17,10 @@ def loadfile(filename,maxframe=None):
     return np.array(frames)
 
 class VideoWriter:
-    def __init__(self,filename):
-        fourcc = cv.VideoWriter_fourcc(*'XVID')
-        self.vidwriter = cv.VideoWriter(filename,fourcc,30,
-                stablized_video.shape[-1:0:-1])
+    def __init__(self,filename,shape):
+        assert(len(shape)==2)
+        fourcc = cv.VideoWriter_fourcc('X','V','I','D')
+        self.vidwriter = cv.VideoWriter(filename,fourcc,30, shape)
         pass
 
     def write(self,frame):
@@ -29,6 +29,8 @@ class VideoWriter:
 class VideoShower:
     def __init__(self,window_name):
         self.window_name = window_name
+        cv.namedWindow(self.window_name,cv.WINDOW_NORMAL)
+        cv.resizeWindow(self.window_name,1200,800)
     def write(self,frame):
         cv.imshow(self.window_name,frame)
 
@@ -57,7 +59,6 @@ class DummyWriter:
 
 
 # Produces a red-blue comparison between two greyscale images
-def combine_compare(shot1,shot2,third=0):
+def combine_compare(shot1,shot2):
     assert(shot1.shape == shot2.shape)
-    z = np.ones(shot1.shape[:2])*third
-    return np.stack((shot1,z,shot2),axis=2)
+    return np.stack((shot1,shot2,shot2),axis=2)
