@@ -94,7 +94,7 @@ def leapfrog_affine(video):
                 geometry.transformed_rect(video.shape[1:],gmatrix[i])).area
         area = geometry.transformed_rect(video.shape[1:],gmatrix[f_frame[-1]]).area
 
-        if intersect_area/area < 0.75 :
+        if intersect_area/area < 0.8:
             f_frame.append(i)
             fkp.append(kp[i])
             fdes.append(des[i])
@@ -120,8 +120,8 @@ def stablize_video(video,extra=False):
         matches[i-1] = match.match(kp[i-1],des[i-1],kp[i],des[i])
     print('All matches completed')
    
-    #gmatrix = frame_affine(kp,matches)
-    gmatrix = leapfrog_affine(video)
+    gmatrix = frame_affine(kp,matches)
+    #gmatrix = leapfrog_affine(video)
     gmatrix,fx,fy = image_dimensions(video.shape[1:],gmatrix)
     print(fx,fy)
 
@@ -148,7 +148,7 @@ def stablize_video(video,extra=False):
 
 if __name__=='__main__':
     #video = util.loadfile('resources/measure.mp4')[:700,::2,::2]
-    video = util.VideoReader('resources/sample2.mp4')
+    video = util.VideoReader('resources/noise1.mov',maxframe=1000)
     print(video.shape)
     stablized_video = stablize_video(video)
     print('video stablized')
@@ -162,5 +162,3 @@ if __name__=='__main__':
    
     for frame in stablized_video.read():
         stable_writer.write(frame)
-        if cv2.waitKey(33) & 0xFF == ord('q'):
-            break

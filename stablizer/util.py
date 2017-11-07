@@ -1,5 +1,6 @@
 import cv2 as cv
 import numpy as np
+import skvideo.io as io
 
 def loadfile(filename,maxframe=None):
     frames = []
@@ -19,12 +20,13 @@ def loadfile(filename,maxframe=None):
 class VideoWriter:
     def __init__(self,filename,shape):
         assert(len(shape)==2)
-        fourcc = cv.VideoWriter_fourcc('X','V','I','D')
-        self.vidwriter = cv.VideoWriter(filename,fourcc,30, shape)
+        self.ffmpeg = io.FFmpegWriter(filename,
+                outputdict={'-s':'{:d}x{:d}'.format(
+                    int(shape[1]/2),int(shape[0]/2))})
         pass
 
     def write(self,frame):
-        self.vidwriter.write(frame)
+        self.ffmpeg.writeFrame(frame)
 
 class VideoShower:
     def __init__(self,window_name):
@@ -33,6 +35,7 @@ class VideoShower:
         cv.resizeWindow(self.window_name,1200,800)
     def write(self,frame):
         cv.imshow(self.window_name,frame)
+        cv2.waitKey(33)
 
 class TextWriter:
     def __init__(self,file_name):
