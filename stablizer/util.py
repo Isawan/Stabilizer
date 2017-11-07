@@ -78,6 +78,13 @@ class VideoReader:
             yield frame
         self.capture.release()
 
+class Video:
+    def __init__(self,genfunc,shape):
+        self._func = genfunc
+        self.shape = shape
+
+    def read(self):
+        return self._func()
 
 # Produces a red-blue comparison between two greyscale images
 def combine_compare(shot1,shot2):

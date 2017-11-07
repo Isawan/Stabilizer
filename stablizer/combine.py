@@ -19,14 +19,18 @@ def transformed_rect(shape,gmatrix):
 
 def combine_all(video,mask,func=np.mean,erode=True):
     final = np.zeros(video.shape[1:],np.uint8)
+    maskarray = []
+    video = np.array(list(video.read()))
     if erode:
         kernel = np.ones((3,3),np.uint8)
-        for m in range(mask.shape[0]):
-            mask[m] = cv2.erode(mask[m].astype(np.uint8),kernel,iterations=1)
-            
+        for i,m in enumerate(mask.read()):
+            mm = cv2.erode(m,kernel,iterations=1)
+            maskarray.append(mm)
+
+    maskarray = np.array(maskarray,dtype=np.bool_)
     for j in range(video.shape[1]):
         for i in range(video.shape[2]):
-            ind = mask[:,j,i]
+            ind = maskarray[:,j,i]
             if not np.any(ind):
                 continue
             final[j,i] = func(video[ind,j,i])
@@ -34,12 +38,12 @@ def combine_all(video,mask,func=np.mean,erode=True):
 
 
 if __name__ == '__main__':
-    video = util.loadfile('resources/measure.mp4')[:,::2,::2]
+    #video = util.loadfile('resources/sample2.mp4')[:,::2,::2]
+    video = util.VideoReader('resources/sample2.mp4')
     print(video.shape)
     print('Video loaded')
     stablized_video,info = stable.stablize_video(video,extra=True)
     print('Video stablized')
-    print(info['mask'].dtype)
     final = combine_all(stablized_video,info['mask'],np.mean)#,lambda x: x[-1])
     print(final.shape)
     plt.imshow(final,'Greys_r')

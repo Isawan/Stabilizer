@@ -129,12 +129,14 @@ def stablize_video(video,extra=False):
     def stable_vid():
         for i,frame in enumerate(video.read()):
             yield cv2.warpPerspective(frame, gmatrix[i], (fx,fy))
+    stable_vid = util.Video(stable_vid,(video.shape[0],fy,fx))
     
     # Mask generator
     def mask():
         base_mask  = np.ones(video.shape[1:],np.uint8)
-        for i in video.shape[0]:
+        for i in range(video.shape[0]):
             yield cv2.warpPerspective(base_mask, gmatrix[i], (fx,fy))
+    mask = util.Video(mask,(video.shape[0],fy,fx))
 
     if extra:
         extrainfo = {
@@ -158,7 +160,7 @@ if __name__=='__main__':
     else:
         stable_writer = util.VideoShower('stable')
    
-    for frame in stablized_video():
+    for frame in stablized_video.read():
         stable_writer.write(frame)
         if cv2.waitKey(33) & 0xFF == ord('q'):
             break
