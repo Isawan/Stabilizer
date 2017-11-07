@@ -57,6 +57,27 @@ class DummyWriter:
     def write(self,something):
         pass
 
+class VideoReader:
+    def __init__(self,filename):
+        self.filename = filename
+        vid = cv.VideoCapture(self.filename)
+        self.shape = (
+                int(vid.get(cv.CAP_PROP_FRAME_COUNT)),
+                int(vid.get(cv.CAP_PROP_FRAME_HEIGHT)),
+                int(vid.get(cv.CAP_PROP_FRAME_WIDTH)))
+        vid.release()
+
+    def read(self):
+        self.capture = cv.VideoCapture(self.filename)
+
+        while self.capture.isOpened():
+            ret, frame = self.capture.read()
+            if not ret:
+                break
+            frame = cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
+            yield frame
+        self.capture.release()
+
 
 # Produces a red-blue comparison between two greyscale images
 def combine_compare(shot1,shot2):

@@ -58,8 +58,8 @@ def leapfrog_affine(video):
     gmatrix[0,:,:] = np.diag(np.ones(3))
     
     # Identify keypoints and descriptors
-    for k in range(video.shape[0]):
-        kp[k],des[k] = identify.detect_features(video[k])
+    for k,frame in enumerate(video.read()):
+        kp[k],des[k] = identify.detect_features(frame)
     print('Identified keypoints') 
 
     f_frame = [0]     # Index of fixed frame, set first frame as initial
@@ -108,12 +108,11 @@ def stablize_video(video,extra=False):
     kp    = [0]*video.shape[0]
     des   = [0]*video.shape[0]
     matches = [0]*(video.shape[0]-1)
-    vid   = [0]*video.shape[0]
     gmatrix = np.zeros((video.shape[0],3,3))
 
     # Identify keypoints and descriptors
-    for k in range(video.shape[0]):
-        kp[k],des[k] = identify.detect_features(video[k])
+    for k,frame in enumerate(video.read()):
+        kp[k],des[k] = identify.detect_features(frame)
     print('Identified keypoints') 
 
     # Perform matching
@@ -125,30 +124,32 @@ def stablize_video(video,extra=False):
     gmatrix = leapfrog_affine(video)
     gmatrix,fx,fy = image_dimensions(video.shape[1:],gmatrix)
     print(fx,fy)
-    mask_image = np.ones((video.shape[0],fy,fx),np.bool_)
-    base_mask  = np.ones(video.shape[1:],np.uint8)
 
-    # Perform transformations
-    for i in range(video.shape[0]):
-        vid[i] = cv2.warpPerspective(video[i], gmatrix[i],
-                (fx,fy))
-        mask_image[i] = cv2.warpPerspective(base_mask, gmatrix[i],
-                (fx,fy))
-    print('Transformations completed')
+    # Transformation generators
+    def stable_vid():
+        for i,frame in enumerate(video.read()):
+            yield cv2.warpPerspective(frame, gmatrix[i], (fx,fy))
     
+    # Mask generator
+    def mask():
+        base_mask  = np.ones(video.shape[1:],np.uint8)
+        for i in video.shape[0]:
+            yield cv2.warpPerspective(base_mask, gmatrix[i], (fx,fy))
 
     if extra:
         extrainfo = {
-                'mask':mask_image,
+                'mask':mask,
                 }
-        return np.array(vid),extrainfo
+        return stable_vid,extrainfo
 
-    return np.array(vid)
+    return stable_vid
 
 if __name__=='__main__':
-    video = util.loadfile('resources/measure.mp4')[:700,::2,::2]
+    #video = util.loadfile('resources/measure.mp4')[:700,::2,::2]
+    video = util.VideoReader('resources/sample2.mp4')
     print(video.shape)
     stablized_video = stablize_video(video)
+    print('video stablized')
 
     # Prepare video writer
     if '-fs' in sys.argv:
@@ -157,8 +158,7 @@ if __name__=='__main__':
     else:
         stable_writer = util.VideoShower('stable')
    
-    for i in range(video.shape[0]):
-        print(i)
-        stable_writer.write(stablized_video[i])
+    for frame in stablized_video():
+        stable_writer.write(frame)
         if cv2.waitKey(33) & 0xFF == ord('q'):
             break
