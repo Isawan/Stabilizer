@@ -36,16 +36,61 @@ def combine_all(video,mask,func=np.mean,erode=True):
             final[j,i] = func(video[ind,j,i])
     return final
 
+def mache(video,gmatrices):
+    s = video.shape[-1:0:-1]
+    rectangle = np.array(( (0,0,1) , (0,s[1],1) , (*s,1) , (s[0],0,1) ))
+    trect = np.einsum('ijk...,lk...->ilj...',gmatrices,rectangle)[:,:,:2]
+    keepidx = [0]
+    keep = [trect[0]]
+    _,w,h = stable.image_dimensions(video.shape[1:],gmatrices)
+    portrait = np.zeros((h,w),np.uint8)
+
+    for i,r in enumerate(trect[1:]):
+        area = geometry.Polygon(keep[-1]).area
+        intersect_area = geometry.Polygon(r).intersection(geometry.Polygon(keep[-1])).area
+        if intersect_area/area < 0.5:
+            keep.append(r)
+            keepidx.append(i)
+
+    base_mask = np.ones(video.shape[1:],np.uint8)
+    kernel = np.ones((9,9),np.uint8)
+    for i,frame in enumerate(video.read()):
+
+        mask = np.zeros((h,w),np.uint8)
+        mask = cv2.warpPerspective(base_mask,gmatrices[i],(w,h))
+        mask = cv2.erode(mask,kernel,iterations=1)
+        mask = mask.astype(np.bool_)
+
+        part = cv2.warpPerspective(frame,gmatrices[i],(w,h))
+        portrait[mask] = part[mask]
+
+    for i,frame in enumerate(video.read()):
+        if i not in keepidx:
+            continue
+
+        mask = np.zeros((h,w),np.uint8)
+        mask = cv2.warpPerspective(base_mask,gmatrices[i],(w,h))
+        mask = cv2.erode(mask,kernel,iterations=1)
+        mask = mask.astype(np.bool_)
+
+        part = cv2.warpPerspective(frame,gmatrices[i],(w,h))
+        portrait[mask] = part[mask]
+
+    return portrait
+    
+
 
 if __name__ == '__main__':
     #video = util.loadfile('resources/sample2.mp4')[:,::2,::2]
-    video = util.VideoReader('resources/sample2.mp4')
+    video = util.VideoReader('resources/drone1.mov',maxframe=2400)
     print(video.shape)
     print('Video loaded')
     stablized_video,info = stable.stablize_video(video,extra=True)
     print('Video stablized')
-    final = combine_all(stablized_video,info['mask'],np.mean)#,lambda x: x[-1])
+    #final = combine_all(stablized_video,info['mask'],np.mean)#,lambda x: x[-1])
+    final = mache(video,info['gmatrix'])
     print(final.shape)
     plt.imshow(final,'Greys_r')
+    plt.savefig('build/output/drone1.png')
     plt.show()
     
