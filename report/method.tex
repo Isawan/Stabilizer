@@ -3,8 +3,24 @@
 
 A pinhole camera model has been used.
 We assume the surface being imaged is sufficiently far away from the camera.
-This allows us to approximate each frame as an affine transformation.
+This allows us to approximate each frame as an affine transformation of the previous.
 \begin{equation}
-
+  \begin{bmatrix}
+    x_{t+1}\\
+    y_{t+1}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    a_{11} & a_{12} & b_{1} \\
+    a_{21} & a_{22} & b_{2} \\
+    0      & 0      & 1 \\
+  \end{bmatrix}
+  \begin{bmatrix}
+    x_t \\
+    y_t
+  \end{bmatrix}
+For numerical stability, we restricted our model to a subset of affine transformations:
+rotation, scaling and translation.
+This reduces the degree of freedom to four.
 \end{equation}
 
