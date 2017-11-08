@@ -60,7 +60,6 @@ def leapfrog_affine(video):
     # Identify keypoints and descriptors
     for k,frame in enumerate(video.read()):
         kp[k],des[k] = identify.detect_features(frame)
-    print('Identified keypoints') 
 
     f_frame = [0]     # Index of fixed frame, set first frame as initial
     fkp     = [kp[0]] # Key points in fixed frame
@@ -70,21 +69,16 @@ def leapfrog_affine(video):
         try:
             matches = match.match(fkp[-1],fdes[-1],kp[i],des[i],
                     maxdist=video.shape[1]/3)
-            localmt = transform.affine_transform(fkp[-1],kp[i],matches)
-            gmatrix[i] = gmatrix[f_frame[-1]] @ np.linalg.inv(localmt)
-        
-        # Fallback on failure
-        except (cv2.error,ValueError) as e:
-            print(("Error has occured on frame {} with fixed {},"
-                    "falling back to frame_affine").format(i,f_frame[-1]))
-            print(e)
-            matches = match.match(kp[i-1],des[i-1],kp[i],des[i],
-                    maxdist=video.shape[1]/4)
-            localmt = transform.affine_transform(kp[i-1],kp[i],matches)
-            print(gmatrix[i-1])
-            print(np.linalg.inv(localmt))
-            gmatrix[i] = gmatrix[i-1] @ np.linalg.inv(localmt)
+        except cv2.error as e:
+            raise ValueError('Could not find enough feature points on frame {}'.format(i)) from e
 
+        try:
+            localmt = transform.affine_transform(fkp[-1],kp[i],matches)
+        except Exception as e:
+            raise Exception('The affine estimate is getting confused') from e
+
+        gmatrix[i] = gmatrix[f_frame[-1]] @ np.linalg.inv(localmt)
+        
 
 
         
@@ -117,11 +111,20 @@ def stablize_video(video,extra=False):
 
     # Perform matching
     for i in range(1,video.shape[0]):
-        matches[i-1] = match.match(kp[i-1],des[i-1],kp[i],des[i])
+        try:
+            matches[i-1] = match.match(kp[i-1],des[i-1],kp[i],des[i])
+        except cv2.error :
+            raise ValueError('Could not find enough feature points on frame {}'.format(i)) from e
     print('All matches completed')
-   
-    gmatrix = frame_affine(kp,matches)
+ 
+
+    ###############
+    # Uncomment to change transformation estimator
+    ###############
+
     #gmatrix = leapfrog_affine(video)
+    gmatrix = frame_affine(kp,matches)
+
     gmatrix,fx,fy = image_dimensions(video.shape[1:],gmatrix)
     print(fx,fy)
 
@@ -141,6 +144,7 @@ def stablize_video(video,extra=False):
     if extra:
         extrainfo = {
                 'mask':mask,
+                'gmatrix':gmatrix
                 }
         return stable_vid,extrainfo
 
