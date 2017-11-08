@@ -3,24 +3,46 @@
 
 A pinhole camera model has been used.
 We assume the surface being imaged is sufficiently far away from the camera.
-This allows us to approximate each frame as an affine transformation of the previous.
+This allows us to approximate any frame $t$ as an affine transformation of the previous frame $t-1$.
+For numerical stability, we restricted the model to a subset of affine transformations:
+a counterclockwise rotation about $(0,0)$ by angle $\theta$;
+a scaling by factor $s$ ;
+and spatial translations $\Delta x$ and $\Delta y$
+This restriction reduces the degree of freedom of the model to four.
+The transformation can be expressed by a matrix product when the screen coordinates $(x,y)$ is augmented to $(x,y,1)$.
 \begin{equation}
   \begin{bmatrix}
-    x_{t+1}\\
-    y_{t+1}
+    x_{t}\\
+    y_{t}\\
+		1
   \end{bmatrix}
   =
   \begin{bmatrix}
-    a_{11} & a_{12} & b_{1} \\
-    a_{21} & a_{22} & b_{2} \\
-    0      & 0      & 1 \\
+		s\cos\theta & -s\sin\theta & \Delta x \\
+    s\sin\theta &  s\cos\theta & \Delta y \\
+    0           &  0           & 1
   \end{bmatrix}
   \begin{bmatrix}
-    x_t \\
-    y_t
+		x_{t-1} \\
+		y_{t-1} \\
+		1
   \end{bmatrix}
-For numerical stability, we restricted our model to a subset of affine transformations:
-rotation, scaling and translation.
-This reduces the degree of freedom to four.
 \end{equation}
 
+\subsection{Transformation estimation}
+
+Transformation estimation involves finding an affine matrix that maps the coordinate of a frame $t$ to the coordinate space of the first frame.
+Our algorithm is based on the feature point matching carried out by Kulkarni et. al. \ref{Kulkarni2017}.
+An overview of the developed algorithm can be described by the following.
+\begin{algorithmic}
+	\FORALL{ Frames }
+		\STATE{Find frame's feature points and associated descriptor with ORB}
+	\ENDFOR
+	\FORALL{ Consecutive frames}
+	  \STATE{Match the keypoints from previous frame}
+		\STATE{Estimate the local transformation matrix $M_t$ with RANSAC on the matches}
+		\STATE{Find the global transformation by $\prod^{t}_{j=0}M_j$}
+	\ENDFOR
+\end{algorithmic}
+
+\subsection{Image stitching}
