@@ -5,6 +5,8 @@ import itertools
 # Returns a dict that maps keypoint1 -> keypoint2
 # Not all keypoints are garunteed to be mapped
 def match(keypoint1,descriptor1,keypoint2,descriptor2,maxdist=300,ratio=0.8):
+    if len(keypoint1)<10 or len(keypoint2)<10:
+        raise Exception('Not enough features!')
     bf = cv2.BFMatcher(cv2.NORM_HAMMING)
     matches = bf.knnMatch(descriptor1,descriptor2,k=2)
     good = []
