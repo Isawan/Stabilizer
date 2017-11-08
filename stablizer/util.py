@@ -35,7 +35,7 @@ class VideoShower:
         cv.resizeWindow(self.window_name,1200,800)
     def write(self,frame):
         cv.imshow(self.window_name,frame)
-        cv2.waitKey(33)
+        cv.waitKey(33)
 
 class TextWriter:
     def __init__(self,file_name):
