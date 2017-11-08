@@ -11,6 +11,7 @@ method        :=$(report)/method.tex
 results       :=$(report)/result.tex
 discussion    :=$(report)/discussion.tex
 conclusion    :=$(report)/conclusion.tex
+bibligraphy   :=$(report)/biblio.bib
 
 texfiles      :=$(document) $(introduction) $(method) $(result) $(discussion) \
 	$(conclusion)
@@ -18,7 +19,7 @@ texfiles      :=$(document) $(introduction) $(method) $(result) $(discussion) \
 
 all: $(finalreport)
 
-$(finalreport): $(texfiles)
+$(finalreport): $(texfiles) $(bibliography)
 	latexmk -pdf -outdir=$(build) -use-make $(document)
 
 
