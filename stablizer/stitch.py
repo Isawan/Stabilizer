@@ -26,10 +26,6 @@ def vid_stitch(filename,mats):
         imFree=np.equal(fullIm,0)
         ret, f = capture.read()
         i+=1
-    #fig=plt.figure()
-    #im=plt.imshow(fullIm)
-    #plt.ion()
-    #plt.show()
     capture.set(cv.CAP_PROP_POS_FRAMES,0)
     i=0
     ret, f = capture.read()
@@ -39,14 +35,12 @@ def vid_stitch(filename,mats):
         fTrans=cv.warpPerspective(f,mats[i],(xmax,ymax))
         fImFree=np.equal(fTrans,0)
         fullIm=fTrans+fullIm*fImFree
-        #im=plt.imshow(fullIm)
-        #fig.canvas.draw()
         writer.write(fullIm)
         ret, f = capture.read()
         print(i)
         i+=1
 
 if __name__ == '__main__':
-    video = util.VideoReader('resources/board1.mp4')
+    video = util.VideoReader('resources/sample2.mp4')
     gmatrices = stable.leapfrog_affine(video)
     vid_stitch('resources/sample2.mp4',gmatrices)
