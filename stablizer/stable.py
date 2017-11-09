@@ -38,7 +38,10 @@ def frame_affine(keypoints_list,matches_list):
     # Calculate local transformation matrices
     invmatr[0] = np.diag(np.ones(3))
     for i in range(1,len(kp)):
-        localmt[i] = transform.affine_transform(kp[i-1],kp[i],matches[i-1])
+        try:
+            localmt[i] = transform.affine_transform(kp[i-1],kp[i],matches[i-1])
+        except ValueError as e:
+            raise ValueError('Occured in frame {}'.format(i)) from e
         invmatr[i] = np.linalg.inv(localmt[i])
     
     # Calculate global transformation matrices
@@ -75,7 +78,7 @@ def leapfrog_affine(video):
         try:
             localmt = transform.affine_transform(fkp[-1],kp[i],matches)
         except Exception as e:
-            raise Exception('The affine estimate is getting confused') from e
+            raise Exception('The affine estimate is getting confused on frame {}'.format(i)) from e
 
         gmatrix[i] = gmatrix[f_frame[-1]] @ np.linalg.inv(localmt)
         
@@ -113,7 +116,7 @@ def stablize_video(video,extra=False):
     for i in range(1,video.shape[0]):
         try:
             matches[i-1] = match.match(kp[i-1],des[i-1],kp[i],des[i])
-        except cv2.error :
+        except cv2.error as e:
             raise ValueError('Could not find enough feature points on frame {}'.format(i)) from e
     print('All matches completed')
  
@@ -151,10 +154,9 @@ def stablize_video(video,extra=False):
     return stable_vid
 
 if __name__=='__main__':
-    #video = util.loadfile('resources/measure.mp4')[:700,::2,::2]
-    video = util.VideoReader('resources/noise1.mov',maxframe=1000)
+    video = util.VideoReader('resources/simnoise.mp4')
     print(video.shape)
-    stablized_video = stablize_video(video)
+    stablized_video,info = stablize_video(video,extra=True)
     print('video stablized')
 
     # Prepare video writer
@@ -163,6 +165,9 @@ if __name__=='__main__':
         stable_writer = util.VideoWriter(filename,stablized_video.shape[1:]) 
     else:
         stable_writer = util.VideoShower('stable')
+    # Save gmatrix if requested
+    if '-fm' in sys.argv:
+        np.savetxt(sys.argv[sys.argv.index('-fm')+1],info['gmatrix'].reshape(-1,3))
    
     for frame in stablized_video.read():
         stable_writer.write(frame)
