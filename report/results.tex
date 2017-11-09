@@ -14,8 +14,11 @@ The stiched output of the simulated data is shown in figure \ref{fig:simnoise}.
 
 Shown in figure \ref{fig:measure}.
 The pixel to meters ratio is $1266.4 \text{pix} cm^{-1}$.
-A plot of the calculated distance over the measured distance is shown in \ref{fig:expect}
-and the deviation from expected trend is shown \ref{fig:deviation}
+A plot of the calculated distance against the measured distance is shown in figure \ref{fig:expect}.
+Figure \ref{fig:deviation} show the absolute deviation from the expected value.
+The deviation is less than 1 cm from the expected initially.
+A sharp deviation is observed beyond the $50 cm$ point,
+corresponding to a discontinuity in the image.
 
 \begin{figure}
   \centering
@@ -40,19 +43,22 @@ and the deviation from expected trend is shown \ref{fig:deviation}
 
 \subsection{Drone footage}
 
-Shown in figure \ref{fig:drone}.
+The panoramic drone footage is shown in figure \ref{fig:drone}.
+Minimal artifacts between the frames can be seen in the lower half of the image.
+The camera is observed to shrink as it passes over tall buildings,
+producing distortions in the upper half of the image.
 
 \begin{figure}
   \centering
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.7\textwidth}
     \includegraphics[width=\textwidth]{output/drone2.png}
-    \caption{Drone footage with stiching}
+    \caption{Stablised drone footage with mache stiching}
     \label{fig:drone}
   \end{subfigure}
-  \begin{subfigure}[b]{0.5\textwidth}
+  \begin{subfigure}[b]{0.7\textwidth}
     \includegraphics[width=\textwidth]{resources/bing2.png}
     \caption{Aerial view from bing maps}
     \label{fig:bing}
   \end{subfigure}
+	\caption{Overhead view}
 \end{figure}
-

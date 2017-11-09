@@ -70,30 +70,46 @@ The result of this is a matrix $M_t$ that transforms the previous frame $t-1$ in
 A global transformation must be calculated.
 The global transformation describes the coordinate mapping of frame $t$ to the first frame.
 This is represented by an affine matrix $M^G_t$.
-This is related to the interframe transformation by
+The global transformation matrix is related to the interframe transformations by
 \begin{equation}
-  M^G_t =  \prod^{t}_{i=0}[ M_i ]^-1
+	M^G_t =  \prod^{t}_{i=0}[ M_i ]^{-1}
 \end{equation}
 A performance improvement is gained by writing the recursive definition
 \begin{equation}
-  M^G_t = [M^G_{t-1}]^{-1}[M_t]^{-1}
+  M^G_t = M^G_{t-1}[M_t]^{-1}
 \end{equation}
-where we set $M^G_0$ as the identity matrix and $M^G_0$ is recorded in each frame.
+where we set $M^G_0$ as the identity matrix and $M^G_{t-1}$ the global transformation of the previous frame.
+
 Finally, we perform a coordinate transform to map each frame to the initial coordinates.
-This is computed with a backward linear interpolation scheme
+This is computed with a backward linear interpolation scheme. 
+
+
 
 \subsection{Visualisation}
+
+To visualise the stablisation, we developed two visualisation algorithms.
+
+\subsubsection{Inplace frame stiching}
+
+
+\subsubsection{Mache stiching}
+
+Mache stiching was developed to provide a static visualisation of the scene whilst
+
+An initial issue with both implementation is memory usage due to the high resolutions of the final image.
+It is impractical to handle all stablized frames in memory.
+This issue was resolved by modifying the algorithm to be lazy evaluated.
 
 \subsection{Evaluation}
 
 We tested our developed algorithm in three stages.
-First, we generated a video tracking across a surface of noise. % What noise?
-The use of %insert noise here%
-was chosen as it provides feature points 
+First, we generated a video tracking across a surface of noise.
+We required the background to possess a large number of corner features.
+Top generate the background Perlin noise \cite{Perlin1985} was edge detected and a color correction was applied.
 The camera was moved along the line parameterized by
 \begin{align}
-  y & = \sin{125+ 50\frac{t}{50}} + t + \text{noise}\\
-  x & = t + \text{noise}
+	y & = 50 + 50\sin(\frac{t}{50}}) + t + \text{noise}\\
+	x & = t + \text{noise}
 \end{align}
 The position of the start and ending frames were recorded and the displacement calculated.
 We applied our algorithm to the video and recorded the displacement of the final frame from the first.
