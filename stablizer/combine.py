@@ -36,7 +36,7 @@ def combine_all(video,mask,func=np.mean,erode=True):
             final[j,i] = func(video[ind,j,i])
     return final
 
-def mache(video,gmatrices):
+def mache(video,gmatrices,overlap=0.9):
     s = video.shape[-1:0:-1]
     rectangle = np.array(( (0,0,1) , (0,s[1],1) , (*s,1) , (s[0],0,1) ))
     trect = np.einsum('ijk...,lk...->ilj...',gmatrices,rectangle)[:,:,:2]
@@ -48,7 +48,7 @@ def mache(video,gmatrices):
     for i,r in enumerate(trect[1:]):
         area = geometry.Polygon(keep[-1]).area
         intersect_area = geometry.Polygon(r).intersection(geometry.Polygon(keep[-1])).area
-        if intersect_area/area < 0.5:
+        if intersect_area/area < overlap:
             keep.append(r)
             keepidx.append(i)
 
@@ -82,7 +82,7 @@ def mache(video,gmatrices):
 
 if __name__ == '__main__':
     #video = util.loadfile('resources/sample2.mp4')[:,::2,::2]
-    video = util.VideoReader('resources/drone1.mov',maxframe=2400)
+    video = util.VideoReader('resources/drone2.mov')
     print(video.shape)
     print('Video loaded')
     stablized_video,info = stable.stablize_video(video,extra=True)
@@ -90,7 +90,6 @@ if __name__ == '__main__':
     #final = combine_all(stablized_video,info['mask'],np.mean)#,lambda x: x[-1])
     final = mache(video,info['gmatrix'])
     print(final.shape)
-    plt.imshow(final,'Greys_r')
-    plt.savefig('build/output/drone1.png')
-    plt.show()
+    #cv2.imwrite('output/measure.bmp',final)
+    plt.imsave('output/drone2.png',final,cmap='Greys_r')
     
