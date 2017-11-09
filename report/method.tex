@@ -4,11 +4,11 @@
 A pinhole camera model has been used.
 We assume the surface being imaged is sufficiently far away from the camera.
 This allows us to approximate any frame $t$ as an affine transformation of the previous frame $t-1$.
-For numerical stability, we restricted the model to a subset of affine transformations:
-a counterclockwise rotation about $(0,0)$ by angle $\theta$;
-a scaling by factor $s$ ;
-and spatial translations $\Delta x$ and $\Delta y$
-This restriction reduces the degree of freedom of the model to four.
+The model was restricted to a subset of affine transformations:
+a counterclockwise rotation about $(0,0)$ by angle $\theta$,
+a scaling by factor $s$ 
+and spatial translations $\Delta x$ and $\Delta y$.
+This improves the numerical stablity of the model by reducing the degree of freedom of the model to four.
 The transformation can be expressed by a matrix product when the screen coordinates $(x,y)$ is augmented to $(x,y,1)$.
 \begin{equation}
   \begin{bmatrix}
@@ -29,20 +29,88 @@ The transformation can be expressed by a matrix product when the screen coordina
   \end{bmatrix}
 \end{equation}
 
+
 \subsection{Transformation estimation}
 
 Transformation estimation involves finding an affine matrix that maps the coordinate of a frame $t$ to the coordinate space of the first frame.
-Our algorithm is based on the feature point matching carried out by Kulkarni et. al. \ref{Kulkarni2017}.
+Our algorithm is based on the feature point matching discussed by Kulkarni et. al. \cite{Kulkarni2017}.
 An overview of the developed algorithm can be described by the following.
+
 \begin{algorithmic}
-	\FORALL{ Frames }
-		\STATE{Find frame's feature points and associated descriptor with ORB}
+	\FORALL{Frames}
+		\STATE{Find frame's feature points and associated visual descriptor with ORB}
 	\ENDFOR
 	\FORALL{ Consecutive frames}
 	  \STATE{Match the keypoints from previous frame}
-		\STATE{Estimate the local transformation matrix $M_t$ with RANSAC on the matches}
-		\STATE{Find the global transformation by $\prod^{t}_{j=0}M_j$}
+		\STATE{Estimate the interframe transformation matrix $M_t$ with RANSAC}
+    \STATE{Find the global transformation by $[ \prod^{t}_{i=0}M_i ]^{-1}$}
 	\ENDFOR
 \end{algorithmic}
 
-\subsection{Image stitching}
+For each frame we identify the feature point and descriptor with ORB.
+ORB is a patent-free feature detector and descriptor based on FAST and BRIEF\cite{Rublee2011}.
+Previous work shows comparable performance between ORB, SIFT and SURF\cite{Karami2017}.
+ORB produces a binary visual descriptor,
+the similarity metric is given by the Hamming distance.
+We set the parameters such that a maximum of 500 features are extracted per frame.
+
+We initially matched the keypoints in consecutive frames.
+The Hamming distance is calculated between the binary descriptors.
+The two nearest neighbours of each point is found by a brute force algorithm.
+The ratio test proposed by D. Lowe\cite{Lowe2004} is applied to reduce false matches;
+if the ratio of the two nearest neighbours is greater than a 0.8 then reject both matchings to that point.
+Of the remaining matchings, we find the spatial position vectors from the frame $t-1$ keypoints to the frame $t$ keypoints.
+
+The remaining matches still contains many false results.
+The interframe transformation matrix is estimated using the RANSAC method\cite{Fischler1981}.
+RANSAC is an iterative method to estimate a best fit model of data with significant outliers.
+The estimation works provided that at least half of the matches are true matches.
+The result of this is a matrix $M_t$ that transforms the previous frame $t-1$ into the frame $t$.
+
+A global transformation must be calculated.
+The global transformation describes the coordinate mapping of frame $t$ to the first frame.
+This is represented by an affine matrix $M^G_t$.
+This is related to the interframe transformation by
+\begin{equation}
+  M^G_t =  \prod^{t}_{i=0}[ M_i ]^-1
+\end{equation}
+A performance improvement is gained by writing the recursive definition
+\begin{equation}
+  M^G_t = [M^G_{t-1}]^{-1}[M_t]^{-1}
+\end{equation}
+where we set $M^G_0$ as the identity matrix and $M^G_0$ is recorded in each frame.
+Finally, we perform a coordinate transform to map each frame to the initial coordinates.
+This is computed with a backward linear interpolation scheme
+
+\subsection{Visualisation}
+
+\subsection{Evaluation}
+
+We tested our developed algorithm in three stages.
+First, we generated a video tracking across a surface of noise. % What noise?
+The use of %insert noise here%
+was chosen as it provides feature points 
+The camera was moved along the line parameterized by
+\begin{align}
+  y & = \sin{125+ 50\frac{t}{50}} + t + \text{noise}\\
+  x & = t + \text{noise}
+\end{align}
+The position of the start and ending frames were recorded and the displacement calculated.
+We applied our algorithm to the video and recorded the displacement of the final frame from the first.
+The result of the video displacement was compared with the true displacement.
+
+Next a tracking shot of a measuring tape was taken.
+A measuring tape was extended on a table surface.
+We placed miscellaneous items around the measuring tape to provide the algorithm with feature points to track.
+A camera placed such that a small region of the measuring tape was visible.
+The camera was tracked along the measuring tape.
+Two points were picked along the tape.
+The true distance is found simply by reading the ticks.
+A distance is calculated from the video by finding the pixel distance between the two points assuming a straight line.
+The pixel distance is converted to a real distance by using the measuring tape ticks in one frame.
+The video distance is then compared to the real distance.
+
+A drone was flown over the University of Nottingham School of Physics and Astronomy.
+Bing maps was used as a reference as it provided the latest image of the area.
+We were unable to find a recent aerial image that included the renovations to George Green Library.
+UAV footage was stabilised and visually compared with a satellite image.
