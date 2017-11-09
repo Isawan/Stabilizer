@@ -13,7 +13,7 @@ discussion    :=$(report)/discussion.tex
 conclusion    :=$(report)/conclusion.tex
 bibligraphy   :=$(report)/biblio.bib
 
-texfiles      :=$(document) $(introduction) $(method) $(result) $(discussion) \
+texfiles      :=$(document) $(introduction) $(method) $(results) $(discussion) \
 	$(conclusion)
 
 
