@@ -22,7 +22,7 @@ class VideoWriter:
         assert(len(shape)==2)
         self.ffmpeg = io.FFmpegWriter(filename,
                 outputdict={'-s':'{:d}x{:d}'.format(
-                    int(shape[1]/2),int(shape[0]/2))})
+                    int(shape[1]),int(shape[0]))})
         pass
 
     def write(self,frame):
