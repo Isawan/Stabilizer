@@ -2,11 +2,16 @@
 \subsection{Simulated data}
 
 The stiched output of the simulated data is shown in figure \ref{fig:simnoise}.
+The distance measured is between center of the dark rings in the top right and bottom left corners.
+The distance between the two points in the original image is 800 pixels.
+The distance between the two points calculated from the video is 1647 pixels.
+Correcting for upscaling, the calculated value is 824 pixels.
+This is a deviation of 3\% after travelling 3 times the window size.
 
 \begin{figure}
   \centering
-  \includegraphics[scale=0.05]{output/simnoise.png}
-  \caption{}
+  \includegraphics[scale=0.2]{output/simnoise.png}
+  \caption{  }
   \label{fig:simnoise}
 \end{figure}
 
@@ -57,7 +62,7 @@ producing distortions in the upper half of the image.
   \end{subfigure}
   \begin{subfigure}[b]{0.7\textwidth}
     \includegraphics[width=\textwidth]{resources/bing2.png}
-    \caption{Aerial view from bing maps}
+    \caption{Aerial view from Bing maps}
     \label{fig:bing}
   \end{subfigure}
 	\caption{Overhead view}
