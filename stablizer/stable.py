@@ -154,16 +154,16 @@ def stablize_video(video,extra=False):
     return stable_vid
 
 if __name__=='__main__':
-    assert('-f' in sys.argv)
-    videofile = sys.argv[sys.argv.index('-f')+1]
+    assert('-i' in sys.argv)
+    videofile = sys.argv[sys.argv.index('-i')+1]
     video = util.VideoReader(videofile)
     print(video.shape)
     stablized_video,info = stablize_video(video,extra=True)
     print('video stablized')
 
     # Prepare video writer
-    if '-fs' in sys.argv:
-        filename = sys.argv[sys.argv.index('-fs')+1]
+    if '-f' in sys.argv:
+        filename = sys.argv[sys.argv.index('-f')+1]
         stable_writer = util.VideoWriter(filename,stablized_video.shape[1:]) 
     else:
         stable_writer = util.VideoShower('stable')

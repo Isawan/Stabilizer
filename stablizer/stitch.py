@@ -4,7 +4,7 @@ import cv2 as cv
 from math import sin,sqrt,ceil
 import stablizer.util as util
 import stablizer.stable as stable
-import time
+import time,sys
 
 def vid_stitch(filename,mats,savefile):
     capture=cv.VideoCapture(filename)
@@ -40,8 +40,10 @@ def vid_stitch(filename,mats,savefile):
         i+=1
 
 if __name__ == '__main__':
-    background = 'output/simdata.mp4'
-    save = 'output/sim_1.mp4'
+    assert('-b' in sys.argv)
+    assert('-f' in sys.argv)
+    background = sys.argv[sys.argv.index('-b')+1]
+    save = sys.argv[sys.argv.index('-f')+1]
     video = util.VideoReader(background)
     print(video.shape)
     gmatrices = stable.leapfrog_affine(video)

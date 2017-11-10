@@ -81,7 +81,9 @@ def mache(video,gmatrices,overlap=0.9):
 
 
 if __name__ == '__main__':
-    video = util.VideoReader('output/simdata.mp4')
+    assert('-f' in sys.argv)
+    assert('-i' in sys.argv)
+    video = util.VideoReader(sys.argv[sys.argv.index('-i')+1])
     print(video.shape)
     print('Video loaded')
     stablized_video,info = stable.stablize_video(video,extra=True)
@@ -90,5 +92,5 @@ if __name__ == '__main__':
     final = mache(video,info['gmatrix'])
     print(final.shape)
     #cv2.imwrite('output/measure.bmp',final)
-    plt.imsave('output/simnoise.png',final,cmap='Greys_r')
+    plt.imsave(sys.argv[sys.argv.index('-f')+1],final,cmap='Greys_r')
     

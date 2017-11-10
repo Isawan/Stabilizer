@@ -1,5 +1,5 @@
 \section{Discussion}
-\subsubsection{Simulated data}
+\subsection{Simulated data}
 The simulated data was used to test the correctness of the in-frame stitching algorithm,
 the result is shown in figure \ref{fig:simnoise_a}.
 We observe that when a frame moves out of an area,
@@ -8,7 +8,7 @@ When transformations are applied to the frames, a small number gain a dark, but 
 The algorithm assumes that any areas with a brightness of 0 are outside of all image data, and can therefore be replaced.
 We resolve this problem with mache stitching where the border is eroded in figure \ref{fig:simnoise}.
 
-The 3\% error on the distance is important has it allows the development o
+%The 3\% error on the distance is important has it allows the development o
 
 \subsection{Measuring tape}
 
@@ -17,7 +17,6 @@ the software was able to correctly maintain the scale of a recorded object but o
 All points below $50 cm$ are scaled correctly
 yet there seems to be some minor discontinuities before $60cm$ is reached.
 Figure \ref{fig:measure} shows these discontinuities clearly.
-
 Near the right-hand side of the image there is a point where the image of the tape becomes disconnected with itself,
 resulting in a difference of angle in the right-most frames compared to the rest of the image.
 The discontinuity is caused by a vertical gap in which very little features are available except for the measuring tape.
