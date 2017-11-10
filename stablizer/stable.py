@@ -154,7 +154,9 @@ def stablize_video(video,extra=False):
     return stable_vid
 
 if __name__=='__main__':
-    video = util.VideoReader('resources/simnoise.mp4')
+    assert('-f' in sys.argv)
+    videofile = sys.argv[sys.argv.index('-f')+1]
+    video = util.VideoReader(videofile)
     print(video.shape)
     stablized_video,info = stablize_video(video,extra=True)
     print('video stablized')
