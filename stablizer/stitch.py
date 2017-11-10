@@ -6,7 +6,7 @@ import stablizer.util as util
 import stablizer.stable as stable
 import time
 
-def vid_stitch(filename,mats):
+def vid_stitch(filename,mats,savefile):
     capture=cv.VideoCapture(filename)
     xmin=min([m[0,2] for m in mats])
     ymin=min([m[1,2] for m in mats])
@@ -29,7 +29,7 @@ def vid_stitch(filename,mats):
     capture.set(cv.CAP_PROP_POS_FRAMES,0)
     i=0
     ret, f = capture.read()
-    writer = util.VideoWriter('example.avi',(ymax,xmax))
+    writer = util.VideoWriter(savefile,(ymax,xmax))
     while(capture.isOpened()) and ret:
         f = cv.cvtColor(f,cv.COLOR_BGR2GRAY)
         fTrans=cv.warpPerspective(f,mats[i],(xmax,ymax))
@@ -37,10 +37,12 @@ def vid_stitch(filename,mats):
         fullIm=fTrans+fullIm*fImFree
         writer.write(fullIm)
         ret, f = capture.read()
-        print(i)
         i+=1
 
 if __name__ == '__main__':
-    video = util.VideoReader('resources/sample2.mp4')
+    background = 'output/simdata.mp4'
+    save = 'output/sim_1.mp4'
+    video = util.VideoReader(background)
+    print(video.shape)
     gmatrices = stable.leapfrog_affine(video)
-    vid_stitch('resources/sample2.mp4',gmatrices)
+    vid_stitch(background,gmatrices,save)

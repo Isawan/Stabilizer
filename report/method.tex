@@ -44,7 +44,7 @@ An overview of the developed algorithm can be described by the following.
 	\FORALL{ Consecutive frames}
 	  \STATE{Match the keypoints from previous frame}
 		\STATE{Estimate the interframe transformation matrix $M_t$ with RANSAC}
-    \STATE{Find the global transformation by $[ \prod^{t}_{i=0}M_i ]^{-1}$}
+    \STATE{Find the global transformation by $ \prod^{t}_{i=0}\left[M_i \right]^{-1}$}
 	\ENDFOR
 \end{algorithmic}
 
