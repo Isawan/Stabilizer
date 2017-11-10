@@ -53,7 +53,7 @@ def mache(video,gmatrices,overlap=0.9):
             keepidx.append(i)
 
     base_mask = np.ones(video.shape[1:],np.uint8)
-    kernel = np.ones((9,9),np.uint8)
+    kernel = np.ones((5,5),np.uint8)
     for i,frame in enumerate(video.read()):
 
         mask = np.zeros((h,w),np.uint8)
@@ -81,8 +81,7 @@ def mache(video,gmatrices,overlap=0.9):
 
 
 if __name__ == '__main__':
-    #video = util.loadfile('resources/sample2.mp4')[:,::2,::2]
-    video = util.VideoReader('resources/drone2.mov')
+    video = util.VideoReader('output/simdata.mp4')
     print(video.shape)
     print('Video loaded')
     stablized_video,info = stable.stablize_video(video,extra=True)
@@ -91,5 +90,5 @@ if __name__ == '__main__':
     final = mache(video,info['gmatrix'])
     print(final.shape)
     #cv2.imwrite('output/measure.bmp',final)
-    plt.imsave('output/drone2.png',final,cmap='Greys_r')
+    plt.imsave('output/simnoise.png',final,cmap='Greys_r')
     
