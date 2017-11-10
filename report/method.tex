@@ -92,12 +92,13 @@ This is computed with a backward linear interpolation scheme.
 \subsection{Visualisation}
 
 To visualise the stablisation, we developed two visualisation algorithms.
+Also, a simple stablized algorithm was implemented.
 
 \subsubsection{Inplace frame stiching}
 
-Another main goal of this project was to create an image containing all of the original video frames,
-appropriately transformed, in a map. 
-This would provide a viewer with a better understanding of the area being recorded,
+The purpose of this algorithm is to create a single video that is a stitch of all video frames.
+As the video plays, the current frame is inserted last.
+This would provide the viewer with a better understanding of the area being recorded,
 as well as some understanding of the motion of the camera.
 % Super long sentence?
 In addition to this large static image,
@@ -109,8 +110,8 @@ transformed and overlaid onto the large image.
 The large static image is created by loading each frame of the original video in sequence,
 transforming the frame with its respective global transformation,
 then adding it to a preallocated array large enough to contain the final image.
-Where one pixel is present in many frames, only the first instance of the pixel being used is desired,
-so as to show what is as close to a snapshot of the initial conditions of an area as possible.
+Where one pixel is present in many frames, only the first instance of the pixel being used is desired.
+This is to show what is as close to a snapshot of the initial conditions of an area as possible.
 To this end, a separate preallocated array is also maintained,
 with the same size as the image array, except only containing logical values.
 This array has a value of $0$ wherever an image has been added to the image array and $1$ everywhere else. 
