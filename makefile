@@ -6,6 +6,7 @@ report        :=report
 # File test
 finalreport   :=$(build)/report.pdf
 document      :=$(report)/report.tex
+abstract      :=$(report)/abstract.tex
 introduction  :=$(report)/introduction.tex
 method        :=$(report)/method.tex
 results       :=$(report)/results.tex
@@ -13,7 +14,7 @@ discussion    :=$(report)/discussion.tex
 conclusion    :=$(report)/conclusion.tex
 bibligraphy   :=$(report)/biblio.bib
 
-texfiles      :=$(document) $(introduction) $(method) $(results) $(discussion) \
+texfiles      :=$(document) $(abstract) $(introduction) $(method) $(results) $(discussion) \
 	$(conclusion)
 
 

@@ -50,16 +50,19 @@ An overview of the developed algorithm can be described by the following.
 
 For each frame we identify the feature point and descriptor with ORB.
 ORB is a patent-free feature detector and descriptor based on FAST and BRIEF\cite{Rublee2011}.
+ORB detects corner features within the image with FAST,
+Harris corner detection is then used to reduce the number of features removing false positives.
+BRIEF is then used to assign a binary visual descriptor vector to each keypoints.
 Previous work shows comparable performance between ORB, SIFT and SURF\cite{Karami2017}.
-ORB produces a binary visual descriptor,
-the similarity metric is given by the Hamming distance.
+Similarity between descriptors is given by the Hamming distance 
+i.e. the number of positions in the vectors where corresponding symbols are different.
 We set the parameters such that a maximum of 500 features are extracted per frame.
 
 We initially matched the keypoints in consecutive frames.
 The Hamming distance is calculated between the binary descriptors.
 The two nearest neighbours of each point is found by a brute force algorithm.
-The ratio test proposed by D. Lowe\cite{Lowe2004} is applied to reduce false matches;
-if the ratio of the two nearest neighbours is greater than a 0.8 then reject both matchings to that point.
+The ratio test proposed by D. Lowe\cite{Lowe2004} is applied to reduce false matches:
+if the Hamming distance ratio of the two nearest neighbours is greater than a 0.8 then reject both matchings to that point.
 Of the remaining matchings, we find the spatial position vectors from the frame $t-1$ keypoints to the frame $t$ keypoints.
 
 The remaining matches still contains many false results.
@@ -92,41 +95,76 @@ To visualise the stablisation, we developed two visualisation algorithms.
 
 \subsubsection{Inplace frame stiching}
 
+Another main goal of this project was to create an image containing all of the original video frames,
+appropriately transformed, in a map. 
+This would provide a viewer with a better understanding of the area being recorded,
+as well as some understanding of the motion of the camera.
+% Super long sentence?
+In addition to this large static image,
+a video version was also created,
+with each frame showing the corresponding frame of the original video,
+transformed and overlaid onto the large image.
+
+% Super long sentence
+The large static image is created by loading each frame of the original video in sequence,
+transforming the frame with its respective global transformation,
+then adding it to a preallocated array large enough to contain the final image.
+Where one pixel is present in many frames, only the first instance of the pixel being used is desired,
+so as to show what is as close to a snapshot of the initial conditions of an area as possible.
+To this end, a separate preallocated array is also maintained,
+with the same size as the image array, except only containing logical values.
+This array has a value of $0$ wherever an image has been added to the image array and $1$ everywhere else. 
+When adding the next frame,
+the transformed image is therefore multiplied by the logical array before being added to the image array,
+after which the logical array is edited to reflect the new occupied pixels.
+To conserve memory, each frame is discarded after being used.
+
+In order to create the video version of the map,
+the above process is applied to generate the first frame.
+The initial image array is the end result of the first algorithm, but the logical is computed differently.
+Instead of showing the available space in the image array,
+it show the pixels which are not being used in each frame.
+The final image array for each frame in the output video is therefore
+$\text{transformed\_source} + \text{previous\_output\_frame} \times \text{logical\_array}$.
+The end result of this process is that each pixel originally shows its first value,
+can change value when the camera passes over the area,
+then is left at its final value after the camera moves on.
 
 \subsubsection{Mache stiching}
 
-Typically, image stitching algorithms find the minimum the number of frames to cover an area.
-This reduces the boundary of frames and therefore reduces visual artifacts.
-However, our method has unavoidable cumulative distortions over time;
-infrequent frame stitching produces very noticeable artifacts at the boundaries.
+Typically, image stitching algorithms find the minimum number of frames required to cover an area.
+This reduces the number of frame boundaries and therefore reduces visual artifacts.
 Minimising the frames in this way loses the camera path information which is useful for analysis.
+Also, our method has unavoidable cumulative distortions over time;
+infrequent frame stitching produces very noticeable artifacts at the boundaries.
 Alternatively, large number of stitchings is clearly not ideal due to many distorted boundary lines.
 
 Mache stitching is a simple method to compromise between the two that we developed.
 The algorithm has a threshold that controls the frequency of frame stitches.
 The threshold $r$ is bounded by $0\leq r \leq1$, a higher value results in more stitches.
+For our tests we set $r=0.8$.
 
 \begin{algorithmic}
   \STATE{Start with a blank canvas}
-  \STATE{Paint initial frame onto the canvas}
+  \STATE{Paint first frame onto the canvas}
   \STATE{Record the position of the corners of the initial frame}
   \FORALL{Frame}
     \STATE{Transform corners using $M^G_t$ into global coordinates}
     \STATE{Calculate intersection between frame and last painted frame}
-    \STATE{Calculate Ratio of intersecting area to frame area}
+    \STATE{Calculate ratio of intersecting area to frame area}
     \IF{$Ratio > Threshold$}
       \STATE{Warp frame to global coordinates}
-      \COMMENT{This removes black banding at the edge due to interpolation}
       \STATE{Trim the edges by erosion with a $5\times5$ square structuring element}
+      \COMMENT{This removes black banding at the edge due to interpolation}
       \STATE{Paint frame onto the canvas}
       \STATE{Record the position of the corners of the frame}
     \ENDIF
   \ENDFOR
 \end{algorithmic}
 
-An initial issue with both implementation is memory usage due to the high resolutions of the final image.
+An initial issue with this implementation is memory usage due to the high resolutions of the final image.
 It is impractical to handle all stabilized frames in memory.
-This issue was resolved by modifying the algorithm to be lazy evaluated.
+This issue was resolved by implementing the algorithm with lazy evaluation.
 
 \subsection{Evaluation}
 
@@ -139,8 +177,8 @@ A video was produced where the video tracked a $250\times250$ window along the l
   y & = 50 + 50\sin{\left(\frac{t}{50}\right)} + t \\
 	x & = t 
 \end{align}
-Small random jitters scale and translate the window was also applied.
-When saving the video, we upscaled the window to $500X500$ to reduce dataloss through video encoding.
+Small random jitters acting by scaling and translating the window was also applied.
+When saving the video, we upscaled the window to $500\times500$ to reduce dataloss through video encoding.
 This path was chosen as it is simple and asymmetric under reflections of the axes;
 the path is asymmetric to avoid errors 'cancelling' out when moving up and down.
 Two points were chosen, one in the initial frame and one in the final frame.
@@ -148,19 +186,20 @@ The distance between the points were calculated in the background image.
 We applied the algorithm to the video and measured the distance based on the panorama image. 
 The distance of the panorama image was divided by two to correct for the upscaling.
 
-A tracking shot of a measuring tape was taken to test the accuracy of the algorithm.
+The algorithm was then tested on a tracking across the measuring tape.
 The accuracy of the algorithm in practice was tested by comparison of estimated spatial distance between known separations.
 A measuring tape was extended on a table surface.
 Miscellaneous items were placed around the measuring tape to provide the algorithm with feature points to track.
 A camera was positioned above the tape such that a small region of the measuring tape was visible.
 The camera was tracked along the measuring tape with small motions orthogonal to the tracking direction.
 Our algorithm was applied to the recorded video to produce a panorama.
-Two points were picked along the tape.
-The true distance between the ticks is found by measuring the ticks.
+The true distance between the ticks and the zeroth tick is found by simply reading off the value.
 The pixel to length ratio was found by measurement of the pixel length between two fixed point on the tape in a single frame.
-The video distance is then compared to the real distance.
+The pixel distance of the ticks was measured in the panorama image.
+The pixel distance could then be converted to a real distance.
+The absolute deviation of the panorama distance from the true value is plotted.
 
 UAV footage taken over the University of Nottingham School of Physics and Astronomy was provided for our testing.
 UAV footage was stabilised and visually compared with an aerial image.
-Bing maps was used as a reference as it provided the latest image of the area.
+Bing maps was used as a reference as they provided the latest image of the area.
 We were unable to find a recent aerial image that included the renovations to George Green Library.

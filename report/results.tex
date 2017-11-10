@@ -1,48 +1,64 @@
 \section{Results}
+
 \subsection{Simulated data}
 
-The stiched output of the simulated data is shown in figure \ref{fig:simnoise}.
-The distance measured is between center of the dark rings in the top right and bottom left corners.
+The stiched output of the simulated data by in-frame stitching is shown in figure \ref{fig:simnoise_a},
+and by mache stitching in figure \ref{fig:simnoise}.
+The distance measured is between center of the black blobs in the top right and bottom left corners.
 The distance between the two points in the original image is 800 pixels.
 The distance between the two points calculated from the video is 1647 pixels.
 Correcting for upscaling, the calculated value is 824 pixels.
 This is a deviation of 3\% after travelling 3 times the window size.
 
 \begin{figure}
-  \centering
-  \includegraphics[scale=0.2]{output/simnoise.png}
-  \caption{  }
-  \label{fig:simnoise}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{output/sim_1_img.png}
+    \caption{The noise visualised by in-place frame stitching at frame 150}
+    \label{fig:simnoise_a}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{output/simnoise.png}
+    \caption{The noise visualised by mache stitching}
+    \label{fig:simnoise}
+  \end{subfigure}
+  \caption{The camera is tracked along a path through the simulated background.
+  The visual artifact of the in-frame stitching is caused due to interpolation during transformations.
+  Very few artifacts are observed along the path using the mache stitching visualisation.}
 \end{figure}
 
 \subsection{Measuring tape}
 
 Shown in figure \ref{fig:measure}.
-The pixel to meters ratio is $1266.4 \text{pix} cm^{-1}$.
-A plot of the calculated distance against the measured distance is shown in figure \ref{fig:expect}.
-Figure \ref{fig:deviation} show the absolute deviation from the expected value.
-The deviation is less than 1 cm from the expected initially.
+The pixel to meters ratio is $1266 \text{pix} cm^{-1}$.
+A plot of the calculated distance against the true distance is shown in figure \ref{fig:expect}.
+Figure \ref{fig:deviation} shows the absolute deviation from the expected value.
+The deviation is around 1 cm from the true value upto around the $50 cm$ point.
 A sharp deviation is observed beyond the $50 cm$ point,
 corresponding to a discontinuity in the image.
 
 \begin{figure}
   \centering
   \includegraphics[scale=0.04]{output/measure.png}
-  \caption{}
+  \caption{The panorama produced from a video tracking along the measuring tape using mache stiching.
+  Prior to passing the 50cm mark, the algorithm is reasonably accurate.
+  The discontinuity occurs around the $50cm$ mark due to significantly less surrounding features than the region before it.
+  This is an important result as it demonstrates the conditions needed for the algorithm to become inaccurate.}
   \label{fig:measure}
 \end{figure}
 
 \begin{figure}
   \centering
   \includegraphics{output/expect.png}
-  \caption{}
+  \caption{A plot of the calculated length against the known true length.
+  The algorithm is produces a reasonably good tracking as long as many features are available to track.}
   \label{fig:expect}
 \end{figure}
 
 \begin{figure}
   \centering
   \includegraphics{output/deviation.png}
-  \caption{}
+  \caption{A plot of the deviation of the calculated distance from the expected value.
+  The sharp deviation in this image corresponds to the discontinuity in the image caused by lack of features.}
   \label{fig:deviation}
 \end{figure}
 
@@ -51,13 +67,13 @@ corresponding to a discontinuity in the image.
 The panoramic drone footage is shown in figure \ref{fig:drone}.
 Minimal artifacts between the frames can be seen in the lower half of the image.
 The camera is observed to shrink as it passes over tall buildings,
-producing distortions in the upper half of the image.
+producing distortions in the upper half of the image. 
 
 \begin{figure}
   \centering
   \begin{subfigure}[b]{0.7\textwidth}
     \includegraphics[width=\textwidth]{output/drone2.png}
-    \caption{Stablised drone footage with mache stiching}
+    \caption{Stabilised drone footage with mache stitching}
     \label{fig:drone}
   \end{subfigure}
   \begin{subfigure}[b]{0.7\textwidth}
@@ -65,5 +81,7 @@ producing distortions in the upper half of the image.
     \caption{Aerial view from Bing maps}
     \label{fig:bing}
   \end{subfigure}
-	\caption{Overhead view}
+	\caption{An aerial view of the same location by two different methods.
+  The algorithm is seen to work very well in the lower half of the image.
+  Heavy distortions occur as the camera moves upwards.}
 \end{figure}
