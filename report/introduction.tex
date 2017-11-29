@@ -6,18 +6,19 @@ have become popular amongst consumers.
 There has also been an upsurge in usage by emergency services.
 These drones are fitted with a camera to record flights, stream video footage, or to help  with piloting.
 Unfortunately, cameras are subject to turbulence due to aerodynamic effects which create unwanted jitters in any videos. 
-In more advanced drones, video quality is increased using a gimbal which attempts real time compensation of the turbulence,
-however a digital approach to video stabilisation provides useful information such as the motion model of the camera.
+In more advanced drones, video quality is increased using a gimbal which attempts real time compensation of the turbulence.
+Although gimbals are capable of removing most of the jitterring, small amounts of shaking still remain in output videos.
+It is far easier, however, to use a digital approach to video stabilisation, which has the added bonus of providing useful information such as the motion model of the camera.
 
-Video stabilisation can be used to compensate all motions or remove high frequency jitters.
-Removal of high frequency jitters is useful for applications in stabilization of video streams
-where the camera motion is unimportant such as astronomy where motion is caused by atmospheric effects. 
-Our work is concerned with the former case, which has the advantage of providing contextual information on the surroundings of each frame in the video.  
+Video stabilisation can be used either to compensate all motions or remove high frequency jitters.
+Removal of high frequency jitters is useful for applications in stabilization of video streams and in cases
+where the camera motion is unimportant such as astronomy where motion is caused by atmospheric effects\cite{Lou2013}. 
+Our work is concerned with the former case, which has the advantage of providing contextual information on the surroundings of each frame in the video\cite{Kumar2001}.  
 
 
-In this paper, we describe an algorithm to estimate the motion of the camera.
-An analysis of the numerical errors of the algorithm is performed.
-We demonstrate how the global motion information can be used to construct a panoramic image from drone footage.
+In this paper, we describe a stabilisation algorithm to estimate the motion of the camera,
+an analysis of the numerical errors of the algorithm is performed,
+and we demonstrate how the global motion information can be used to construct a panoramic image from drone footage.
 This method produces an image or video with significantly higher resolution than the original video dimensions. 
 Applications of this include mapping of areas with greater resolution than is available with the camera being used, by recording a video of the drone passing over the area of the desired image.
 Another possible use is to show the path taken by an object being tracked by the drone.

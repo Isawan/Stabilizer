@@ -1,14 +1,13 @@
 \section{Method}
 \subsection{Camera model}
 
-A pinhole camera model has been used.
-We assume the surface being imaged is sufficiently far away from the camera.
+A pinhole camera model has been used, and we assume that the surface being imaged is sufficiently far away from the camera.
 This allows us to approximate any frame $t$ as an affine transformation of the previous frame $t-1$.
 The model was restricted to a subset of affine transformations:
-a counterclockwise rotation about $(0,0)$ by angle $\theta$,
+a counter-clockwise rotation about $(0,0)$ by angle $\theta$,
 a scaling by factor $s$ 
 and spatial translations $\Delta x$ and $\Delta y$.
-This improves the numerical stablity of the model by reducing the degree of freedom of the model to four.
+This improves the numerical stability of the model by reducing the degree of freedom of the model to four.
 The transformation can be expressed by a matrix product when the screen coordinates $(x,y)$ is augmented to $(x,y,1)$.
 \begin{equation}
   \begin{bmatrix}
@@ -43,7 +42,7 @@ An overview of the developed algorithm can be described by the following.
 	\ENDFOR
 	\FORALL{ Consecutive frames}
 	  \STATE{Match the keypoints from previous frame}
-		\STATE{Estimate the interframe transformation matrix $M_t$ with RANSAC}
+		\STATE{Estimate the inter-frame transformation matrix $M_t$ with RANSAC}
     \STATE{Find the global transformation by $ \prod^{t}_{i=0}\left[M_i \right]^{-1}$}
 	\ENDFOR
 \end{algorithmic}
@@ -66,15 +65,15 @@ if the Hamming distance ratio of the two nearest neighbours is greater than a 0.
 Of the remaining matchings, we find the spatial position vectors from the frame $t-1$ keypoints to the frame $t$ keypoints.
 
 The remaining matches still contains many false results.
-The interframe transformation matrix is estimated using the RANSAC method\cite{Fischler1981}.
+The inter-frame transformation matrix is estimated using the RANSAC method\cite{Fischler1981}.
 RANSAC is an iterative method to estimate a best fit model of data with significant outliers.
-The estimation works provided that at least half of the matches are true matches.
+This estimation works well, provided that at least half of the matches are true matches.
 The result of this is a matrix $M_t$ that transforms the previous frame $t-1$ into the frame $t$.
 
 A global transformation must be calculated.
 The global transformation describes the coordinate mapping of frame $t$ to the first frame.
 This is represented by an affine matrix $M^G_t$.
-The global transformation matrix is related to the interframe transformations by
+The global transformation matrix is related to the inter-frame transformations by
 \begin{equation}
 	M^G_t =  \prod^{t}_{i=0}[ M_i ]^{-1}
 \end{equation}
@@ -91,18 +90,16 @@ This is computed with a backward linear interpolation scheme.
 
 \subsection{Visualisation}
 
-To visualise the stablisation, we developed two visualisation algorithms.
-Also, a simple stablized algorithm was implemented.
+To visualise the stabilisation, we developed two visualisation algorithms.
 
-\subsubsection{Inplace frame stiching}
+\subsubsection{In-place frame stitching}
 
 The purpose of this algorithm is to create a single video which is a stitch of all video frames.
-As the video plays, the current frame is inserted last.
 This would provide the viewer with a better understanding of the area being recorded,
 as well as some understanding of the motion of the camera.
 % Super long sentence?
 In addition to this large static image,
-a video version was also created,
+a video version was also created
 with each frame showing the corresponding frame of the original video,
 transformed and overlaid onto the large image.
 
@@ -111,11 +108,11 @@ The large static image is created by loading each frame of the original video in
 transforming the frame with its respective global transformation,
 then adding it to a preallocated array large enough to contain the final image.
 Where one pixel is present in many frames, only the first instance of the pixel being used is desired.
-This is to show what is as close to a snapshot of the initial conditions of an area as possible.
-To this end, a separate preallocated array is also maintained,
+This results in what is as close to a snapshot of the initial conditions of an area as possible.
+To this end, a separate preallocated array is also maintained
 with the same size as the image array, except only containing logical values.
 This array has a value of $0$ wherever an image has been added to the image array and $1$ everywhere else. 
-When adding the next frame,
+Each time a frame is added to the image,
 the transformed image is therefore multiplied by the logical array before being added to the image array,
 after which the logical array is edited to reflect the new occupied pixels.
 To conserve memory, each frame is discarded after being used.
@@ -124,26 +121,26 @@ In order to create the video version of the map,
 the above process is applied to generate the first frame.
 The initial image array is the end result of the first algorithm, but the logical is computed differently.
 Instead of showing the available space in the image array,
-it show the pixels which are not being used in each frame.
+it show the pixels which are not being used in the current frame.
 The final image array for each frame in the output video is therefore
-$\text{transformed\_source} + \text{previous\_output\_frame} \times \text{logical\_array}$.
+the transformed frame, with the unoccupied areas being filled in by the image from the previous frame.
 The end result of this process is that each pixel originally shows its first value,
 can change value when the camera passes over the area,
 then is left at its final value after the camera moves on.
 
-\subsubsection{Mache stiching}
+\subsubsection{Mache stitching}
 
 Typically, image stitching algorithms find the minimum number of frames required to cover an area.
-This reduces the number of frame boundaries and therefore reduces visual artifacts.
+This reduces the number of frame boundaries and therefore reduces visual artefacts.
 Minimising the frames in this way loses the camera path information which is useful for analysis.
 Also, our method has unavoidable cumulative distortions over time;
-infrequent frame stitching produces very noticeable artifacts at the boundaries.
-Alternatively, large number of stitchings is clearly not ideal due to many distorted boundary lines.
+infrequent frame stitching produces very noticeable artefacts at the boundaries.
+Alternatively, a large number of stitchings is clearly not ideal due to the many distorted boundary lines which it would result in.
 
 Mache stitching is a simple method to compromise between the two that we developed.
 The algorithm has a threshold that controls the frequency of frame stitches.
 The threshold $r$ is bounded by $0\leq r \leq1$, a higher value results in more stitches.
-For our tests we set $r=0.8$.
+For our tests we set $r=0.8$ as it appeared to give reasonable results.
 
 \begin{algorithmic}
   \STATE{Start with a blank canvas}
@@ -171,37 +168,35 @@ This issue was resolved by implementing the algorithm with lazy evaluation.
 
 We tested our developed algorithm in three stages.
 First, we generated a video tracking across a surface of noise to test the ideal case.
-A background was generated by an edge detected Perlin noise \cite{Perlin1985} with a color correction.
+A background was generated by an edge detected Perlin noise \cite{Perlin1985} with a colour correction.
 This noise was chosen as it has distinctive corner features for the algorithm to track.
-A video was produced where the video tracked a $250\times250$ window along the line parameterized by
+A video was produced where the video tracked a $250\times250$ window along the line parametrized by
 \begin{align}
   y & = 50 + 50\sin{\left(\frac{t}{50}\right)} + t \\
 	x & = t 
 \end{align}
-Small random jitters acting by scaling and translating the window was also applied.
-When saving the video, we upscaled the window to $500\times500$ to reduce dataloss through video encoding.
+Small random jitters acting by scaling and translating the window were also applied.
+When saving the video, we up-scaled the window to $500\times500$ to reduce data loss through video encoding.
 This path was chosen as it is simple and asymmetric under reflections of the axes;
 the path is asymmetric to avoid errors 'cancelling' out when moving up and down.
-Two points were chosen, one in the initial frame and one in the final frame.
-The distance between the points were calculated in the background image.
-We applied the algorithm to the video and measured the distance based on the panorama image. 
-The distance of the panorama image was divided by two to correct for the upscaling.
+Two points were chosen, one in the initial frame and one in the final frame and
+the distance between the points was calculated in the background image.
+We applied the stabilisation algorithm to the video and measured the distance based on the panorama image.
+The distance of the panorama image was divided by two to correct for the up-scaling.
 
 The algorithm was then tested on a tracking across the measuring tape.
 The accuracy of the algorithm in practice was tested by comparison of estimated spatial distance between known separations.
-A measuring tape was extended on a table surface.
-Miscellaneous items were placed around the measuring tape to provide the algorithm with feature points to track.
+A measuring tape was extended on a table surface, with miscellaneous items placed around the tape to provide the algorithm with feature points to track.
 A Samsung Galaxy J5 SM-J500FN was used as the camera.
-The camera was positioned above the tape such that a small region of the measuring tape was visible.
-The camera was tracked along the measuring tape with small motions orthogonal to the tracking direction.
-Our algorithm was applied to the recorded video to produce a panorama.
-The true distance between the ticks and the zeroth tick is found by simply reading off the value.
+The camera was positioned above the tape such that a small region of the measuring tape was visible and was
+tracked along the measuring tape with small motions orthogonal to the tracking direction.
+Our stabilisation algorithm was applied to the recorded video to produce a panorama.
+The true distance between each tick and the zeroth tick was found by simply reading off the value stated on the tape.
 The pixel to length ratio was found by measurement of the pixel length between two fixed point on the tape in a single frame.
-The pixel distance of the ticks was measured in the panorama image.
-The pixel distance could then be converted to a real distance.
+The pixel distance of the ticks was measured in the panorama image and was then converted to a real distance.
 The absolute deviation of the panorama distance from the true value is plotted.
 
-UAV footage taken over the University of Nottingham School of Physics and Astronomy was provided for our testing.
-UAV footage was stabilised and visually compared with an aerial image.
-Bing maps was used as a reference as they provided the latest image of the area.
-We were unable to find a recent aerial image that included the renovations to George Green Library.
+UAV footage recorded over the University of Nottingham School of Physics and Astronomy was provided for our testing.
+This video was stabilised and compared visually with an aerial image.
+Bing maps was used as a reference as they provided the most up-to-date image of the area, 
+however it still did not show some of the buildings present at the time of the UAV footages' recording

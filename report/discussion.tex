@@ -1,11 +1,12 @@
 \section{Discussion}
 \subsection{Simulated data}
 The simulated data was used to test the correctness of the in-frame stitching algorithm,
-the result is shown in figure \ref{fig:simnoise_a}.
+the result of which is shown in figure \ref{fig:simnoise_a}.
 We observe that when a frame moves out of an area,
 there is a chance that it would leave behind a line of dark pixels, rather than the image which should be displayed.
-When transformations are applied to the frames, a small number gain a dark, but not completely black, border due to interpolation when the transformation is applied. 
-The algorithm assumes that any areas with a brightness of 0 are outside of all image data, and can therefore be replaced.
+This is because when transformations are applied to the frames, a small number gain a dark, but not completely black, border due to interpolation when the transformation is applied.
+A problem arises due to the stitching algorithm assuming that only areas with a brightness of 0 are outside of all image data, 
+meaning these erroneous near-black strips are not replaced by subsequent frames and therefore remain in the final image. 
 We resolve this problem with mache stitching where the border is eroded in figure \ref{fig:simnoise}.
 
 %The 3\% error on the distance is important has it allows the development o
@@ -19,12 +20,11 @@ yet there seems to be some minor discontinuities before $60cm$ is reached.
 Figure \ref{fig:measure} shows these discontinuities clearly.
 Near the right-hand side of the image there is a point where the image of the tape becomes disconnected with itself,
 resulting in a difference of angle in the right-most frames compared to the rest of the image.
-The discontinuity is caused by a vertical gap in which very little features are available except for the measuring tape.
-This would result in the ORB algorithm finding few feature points outside of the tape.
+The discontinuity is caused by a vertical gap in which very little features are available except for the measuring tape,
+resulting in the ORB algorithm finding few feature points outside of the tape.
 This is a problem as most of these remaining points are situated on the identical ticks on the tape's scale,
 making it difficult to accurately match each point to itself in neighbouring frames.
-This shows that when performing video stabilisation,
-it is important to ensure that there are sufficient objects which exist in both frames before attempting to calculate transformations,  otherwise artefacts are highly likely.
+It is therefore important to ensure that there are sufficient objects which exist in both frames before attempting to calculate transformations,  otherwise artefacts are highly likely.
 
 \subsection{Drone footage}
 
@@ -39,6 +39,5 @@ Further inconsistencies may be spotted by using real satellite imagery of the ar
 Of particular note is that although many buildings in the upper section have incorrect locations and scales,
 their rotations seem mostly unaffected.
 It appears that each time the drone moves over a building, the displayed frame size is reduced.
-This is most likely due to the changing size of the buildings' walls due to parallax.
-As the drone passes over each building, it walls would seem to shrink upon approach, disappear whilst the drone is directly ahead, then expand again once it passes over the other side.
-The effect of the shrink is small when flying over the car park which show the algorithm will work as long as surface is low-laying.
+This is most likely due to the changing size of the buildings' walls due to parallax, and shows that in this case our camera model is flawed.
+The effect of the shrink is small when flying over the car park which shows that the algorithm will work as long as surface is low-laying.
