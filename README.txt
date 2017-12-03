@@ -7,10 +7,11 @@ matplotlib
 skvideo
 opencv
 shapely
+python3.5
 
-So let's start off by generating the mache image
+So let's start off by generating the mache image. Note -v is optional and assumes 30 fps.
 
-python3 -m stablizer.combine -i <input video> -f <output image>
+python3 -m stablizer.combine -i <input video> -f <output image> -v <start time in secs>:<end time in secs>
 
 Generate the in-frame image
 

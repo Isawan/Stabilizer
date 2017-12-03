@@ -7,16 +7,8 @@ import stablizer.stable as stable
 import stablizer.util as util
 
 
-def intersect(rect1,rect2):
-    a = geometry.Polygon(rect1)
-    b = geometry.Polygon(rect2)
-    return a.intersection(b)
-
-def transformed_rect(shape,gmatrix):
-    s = shape[1::-1] # Save typing
-    rectangle = np.array(( (0,0,1) , (0,s[1],1) , (*s,1) , (s[0],0,1) ))
-    return np.einsum('ij...,kj...->ki...',gmatrix,rectangle)[:,:2]
-
+# A simple stiching of frames to form a large image.
+# Computes overlapping pixels using the func parameter, set to mean as default.
 def combine_all(video,mask,func=np.mean,erode=True):
     final = np.zeros(video.shape[1:],np.uint8)
     maskarray = []
@@ -36,6 +28,8 @@ def combine_all(video,mask,func=np.mean,erode=True):
             final[j,i] = func(video[ind,j,i])
     return final
 
+# Mache drawing, a method of stiching that only puts stiches an image in when the
+# overlap between frames falls below a threshold.
 def mache(video,gmatrices,overlap=0.9):
     s = video.shape[-1:0:-1]
     rectangle = np.array(( (0,0,1) , (0,s[1],1) , (*s,1) , (s[0],0,1) ))
@@ -83,7 +77,13 @@ def mache(video,gmatrices,overlap=0.9):
 if __name__ == '__main__':
     assert('-f' in sys.argv)
     assert('-i' in sys.argv)
-    video = util.VideoReader(sys.argv[sys.argv.index('-i')+1])
+    if '-v' in sys.argv: 
+        ran = sys.argv[sys.argv.index('-v')+1]
+        mint,maxt = map(float,ran.split(':'))
+        video = util.VideoReader(sys.argv[sys.argv.index('-i')+1],
+                minframe=int(mint*30),maxframe=int(maxt*30))
+    else:
+        video = util.VideoReader(sys.argv[sys.argv.index('-i')+1])
     print(video.shape)
     print('Video loaded')
     stablized_video,info = stable.stablize_video(video,extra=True)

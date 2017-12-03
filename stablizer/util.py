@@ -61,11 +61,12 @@ class DummyWriter:
         pass
 
 class VideoReader:
-    def __init__(self,filename,maxframe=None):
+    def __init__(self,filename,minframe=0,maxframe=None):
         self.filename = filename
         self.maxframe = maxframe
+        self.minframe = minframe
         vid = cv.VideoCapture(self.filename)
-        numframes = maxframe if maxframe else int(vid.get(cv.CAP_PROP_FRAME_COUNT))
+        numframes = maxframe-minframe if maxframe else int(vid.get(cv.CAP_PROP_FRAME_COUNT))
         self.shape = (
                 numframes,
                 int(vid.get(cv.CAP_PROP_FRAME_HEIGHT)),
@@ -77,6 +78,9 @@ class VideoReader:
         fc = 0
         while self.capture.isOpened():
             ret, frame = self.capture.read()
+            if fc < self.minframe:
+                fc+=1
+                continue
             if not ret:
                 break
             if self.maxframe and self.maxframe <= fc:
