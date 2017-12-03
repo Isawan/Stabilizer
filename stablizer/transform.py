@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import cv2
 import sys
 
+# Estimate an affine matrix that transforms one from to another based on
+# detected feature points
 def affine_transform(keypoint1,keypoint2,matches):
     src = np.array([keypoint1[m.queryIdx].pt for m in matches]).reshape(-1,1,2)
     dst = np.array([keypoint2[m.trainIdx].pt for m in matches]).reshape(-1,1,2)

@@ -1,5 +1,6 @@
 import cv2
 
+# Draw arrows line from src to dst. Used for debugging.
 def draw_matches(src,dst,image,color=0x00ff00):
     assert(len(src)==len(dst))
     for i in range(len(src)):

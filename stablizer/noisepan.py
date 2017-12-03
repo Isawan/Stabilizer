@@ -1,3 +1,4 @@
+# This script generates test data for the algorithm
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpim

@@ -1,3 +1,4 @@
+# Performs error analysis on the stiching algorithm
 import numpy as np
 import matplotlib.pyplot as plt
 

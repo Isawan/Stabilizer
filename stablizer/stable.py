@@ -156,7 +156,7 @@ def stablize_video(video,extra=False):
 if __name__=='__main__':
     assert('-i' in sys.argv)
     videofile = sys.argv[sys.argv.index('-i')+1]
-    video = util.VideoReader(videofile)
+    video = util.VideoReader(videofile,minframe=30*5,maxframe=50*30)
     print(video.shape)
     stablized_video,info = stablize_video(video,extra=True)
     print('video stablized')

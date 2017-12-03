@@ -6,6 +6,7 @@ import stablizer.util as util
 import stablizer.stable as stable
 import time,sys
 
+# Produces a video of stitching in process
 def vid_stitch(filename,mats,savefile):
     capture=cv.VideoCapture(filename)
     xmin=min([m[0,2] for m in mats])
