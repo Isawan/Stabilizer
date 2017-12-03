@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 import cv2
 import sys, time
 import shapely.geometry as geometry
-import stablizer.util as util
-import stablizer.identify as identify
-import stablizer.match as match
-import stablizer.transform as transform
-import stablizer.geometry as geometry
+import stabilizer.util as util
+import stabilizer.identify as identify
+import stabilizer.match as match
+import stabilizer.transform as transform
+import stabilizer.geometry as geometry
 
 # Calculate the required shape of the image given a set of global
 # affine transformation matrices and the original shape.
@@ -101,7 +101,7 @@ def leapfrog_affine(video):
 
   
 
-def stablize_video(video,extra=False):
+def stabilize_video(video,extra=False):
     kp    = [0]*video.shape[0]
     des   = [0]*video.shape[0]
     matches = [0]*(video.shape[0]-1)
@@ -158,18 +158,18 @@ if __name__=='__main__':
     videofile = sys.argv[sys.argv.index('-i')+1]
     video = util.VideoReader(videofile,minframe=30*5,maxframe=50*30)
     print(video.shape)
-    stablized_video,info = stablize_video(video,extra=True)
-    print('video stablized')
+    stabilized_video,info = stabilize_video(video,extra=True)
+    print('video stabilized')
 
     # Prepare video writer
     if '-f' in sys.argv:
         filename = sys.argv[sys.argv.index('-f')+1]
-        stable_writer = util.VideoWriter(filename,stablized_video.shape[1:]) 
+        stable_writer = util.VideoWriter(filename,stabilized_video.shape[1:]) 
     else:
         stable_writer = util.VideoShower('stable')
     # Save gmatrix if requested
     if '-fm' in sys.argv:
         np.savetxt(sys.argv[sys.argv.index('-fm')+1],info['gmatrix'].reshape(-1,3))
    
-    for frame in stablized_video.read():
+    for frame in stabilized_video.read():
         stable_writer.write(frame)

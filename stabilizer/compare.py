@@ -1,11 +1,11 @@
 # This file is a scratchspace for testing new algorithms and comparing them
 import numpy as np
 import matplotlib.pyplot as plt
-import stablizer.util as util
-import stablizer.identify as identify
-import stablizer.match as match
-import stablizer.transform as transform
-import stablizer.drawer as drawer
+import stabilizer.util as util
+import stabilizer.identify as identify
+import stabilizer.match as match
+import stabilizer.transform as transform
+import stabilizer.drawer as drawer
 import cv2
 
 

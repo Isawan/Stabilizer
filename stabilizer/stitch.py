@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2 as cv
 from math import sin,sqrt,ceil
-import stablizer.util as util
-import stablizer.stable as stable
+import stabilizer.util as util
+import stabilizer.stable as stable
 import time,sys
 
 # Produces a video of stitching in process

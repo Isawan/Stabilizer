@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import cv2
 import sys
 import shapely.geometry as geometry
-import stablizer.stable as stable
-import stablizer.util as util
+import stabilizer.stable as stable
+import stabilizer.util as util
 
 
 # A simple stiching of frames to form a large image.
@@ -86,9 +86,9 @@ if __name__ == '__main__':
         video = util.VideoReader(sys.argv[sys.argv.index('-i')+1])
     print(video.shape)
     print('Video loaded')
-    stablized_video,info = stable.stablize_video(video,extra=True)
-    print('Video stablized')
-    #final = combine_all(stablized_video,info['mask'],np.mean)#,lambda x: x[-1])
+    stabilized_video,info = stable.stabilize_video(video,extra=True)
+    print('Video stabilized')
+    #final = combine_all(stabilized_video,info['mask'],np.mean)#,lambda x: x[-1])
     final = mache(video,info['gmatrix'])
     print(final.shape)
     #cv2.imwrite('output/measure.bmp',final)
