@@ -1,5 +1,3 @@
-Firstly I'm aware I spelt stabilizer wrong in the folder name, but it works so
-I won't be trying to change that. 
 I'm assuming your using linux but I'm sure you can adapt it to other OSes.
 So make sure you have the dependencies installed, I think this is sufficient:
 numpy 
