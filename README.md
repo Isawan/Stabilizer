@@ -1,3 +1,16 @@
+# Stablizer
+
+A video stabilizer implementation based on feature point matching by Isawan Millican and Christopher Cole.
+
+Here's an example of the program working.
+
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/jjOkjbpqEg/0.jpg)](http://www.youtube.com/watch?v=jjOkjbpqEgA)
+
+The software has been extended to allow image stiching from videos.
+
+![Stiched images](https://isawan.net/fileshare/drone.jpg)
+
+
 Make sure you have the dependencies installed:
 * numpy 
 * matplotlib
