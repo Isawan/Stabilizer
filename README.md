@@ -4,7 +4,7 @@ A video stabilizer implementation based on feature point matching by Isawan Mill
 
 Here's an example of the program working.
 
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/jjOkjbpqEg/0.jpg)](http://www.youtube.com/watch?v=jjOkjbpqEgA)
+[![Stablized video](https://img.youtube.com/vi/jjOkjbpqEg/0.jpg)](https://www.youtube.com/watch?v=jjOkjbpqEgA)
 
 The software has been extended to allow image stiching from videos.
 
