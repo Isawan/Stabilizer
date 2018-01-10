@@ -1,10 +1,10 @@
-# Stablizer
+# Stabilizer
 
 A video stabilizer implementation based on feature point matching by Isawan Millican and Christopher Cole.
 
 Here's an example of the program working.
 
-[![Stablized video](https://img.youtube.com/vi/jjOkjbpqEg/0.jpg)](https://www.youtube.com/watch?v=jjOkjbpqEgA)
+[![Stabilized video](https://img.youtube.com/vi/jjOkjbpqEg/0.jpg)](https://www.youtube.com/watch?v=jjOkjbpqEgA)
 
 The software has been extended to allow image stiching from videos.
 
@@ -26,7 +26,7 @@ Generate the in-frame image
 
     python3 -m stabilizer.stitch -i <input video> -f <output video>
 
-Generate the normal stablized video (Note: -fm is optional)
+Generate the normal stabilized video (Note: -fm is optional)
 
     python3 -m stabilizer.stable -i <input video> -f <output video> \
                 -fm <matrix print> 
