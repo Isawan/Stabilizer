@@ -1,6 +1,7 @@
 # Stablizer
 
 A video stabilizer implementation based on feature point matching by Isawan Millican and Christopher Cole.
+The whole project from research, implementation to report was completed in just under two weeks.
 
 Here's an example of the program working.
 
